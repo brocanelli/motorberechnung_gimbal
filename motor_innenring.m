@@ -1,4 +1,4 @@
-% Berechnung für Antriebsmoment
+% Berechnung fÃ¼r Antriebsmoment
 % Trapezgewinde
 close all;
 clear;
@@ -10,22 +10,18 @@ P = 2*1e-3; % Steigung in mm
 %% Kinematik
 d = 64.5*2*1e-3; %Angriffspunkt des Gimbal-Motors
 x0 = 65*1e-3; %Abstand des oberen Gabelpunktes zum Globaeln Koordinatensys.
-l = 40*1e-3; %Länge der Gabel
-a = 19*1e-3; %Höhe unteres gabelauge
+l = 40*1e-3; %LÃ¤nge der Gabel
+a = 19*1e-3; %HÃ¶he unteres gabelauge
 
 syms phi
 % phi = linspace(-10,10,21)*pi/180;
 psi = asin(x0/l - cos(phi)*d/2/l - a/l*sin(phi));
 f_psi = matlabFunction(psi);
 
-% gamma = [-10 -9 -8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10];
-% alpha_innen = [6.862 6.122 5.411 4.727 4.070 3.442 2.841 2.268 1.722 1.205 0.716... 90ig
-%     0.255 -0.177 -0.581 -0.957 -1.304 -1.623 -1.912 -2.173 -2.404 -2.607]*(-1);
-% % alpha_ausen = [
 
 %% Dynamik
 Fs = 10e3; %Schubkraft
-c = 20*1e-3; %Exzentrizität
+c = 20*1e-3; %ExzentrizitÃ¤t
 Isd = 254675.319*1e-6; %kg mm^2
 Isi = 2363.620*1e-6; %kg mm^2 (Relativer Fehler = 0.001992%)
 Is = Isd + Isi;
@@ -52,12 +48,6 @@ vky = -d/2*cos(phi_t).*phi_t_dot - a*sin(phi_t).*phi_t_dot - l*sin(phi_t).*psi_d
 gamma_dot = 2*pi*vky/P;
 n = gamma_dot/2/pi; %rps
 
-%% --------
-% mu_g = 0.35; %worst case Reibung Gewinde
-% mu_l = 0.35; %worst case Reibung Lager
-mu_g = 0.09; %worst case Reibung Gewinde
-mu_l = 0.09; %worst case Reibung Lager
-
 mu_g = 0.01; %worst case Reibung Gewinde
 mu_l = 0.01; %worst case Reibung Lager
 
@@ -75,17 +65,6 @@ Fay2 = Fst2.*cos(f_psi(phi_t));
 Fax1 = Fst1.*sin(f_psi(phi_t));
 Fax2 = Fst2.*sin(f_psi(phi_t));
 
-% MG1 = Fay1*tan(phi-rho)*r2; % Gewindereibmoment
-% ML1 = Fay1*mu_l*rL;
-% MA1 = abs(MG1) + abs(ML1);
-
-% MG1 = Fay1*abs(tan(phi-rho))*r2; % Gewindereibmoment
-% ML1 = Fay1*mu_l*rL;
-% MA1 = MG1 + ML1;
-%
-% MG2 = Fay2*abs(tan(phi-rho))*r2; % Gewindereibmoment
-% ML2 = Fay2*mu_l*rL;
-% MA2 = MG2 + ML2;
 if phi-rho < 0
     sprintf('ACHTUNG: SELBSTHEMMUNG')
 end
@@ -103,35 +82,6 @@ for idx = 1:length(phi_t) % falle 1
         MA2 = [MA2; Fay2(idx)*(tan(phi+rho))*r2 + Fay2(idx)*mu_l*rL];
     end
 end
-
-% Gewindereibmoment nach Rolof-Matek
-% Lagerreibmoment nach FAG
-% AXK0821-TV
-% https://medias.schaeffler.com/medias/de!hp.tg.cat/tg_hr*ST4_18687224075
-% f0 = 3;
-% f1 = 0.0015;
-% dm = (21+8)/2; %Mittlerer Lagerdurchmesser
-% mu = 100; %mm^2/s kinematische Viskosität bei 40°C ISOVG100
-% 
-% for idx = 1:length(phi_t) % falle 1
-%     if abs(mu*n*60) >= 2000
-%         M0 = f0*(mu*n(idx)*60)^(2/3)*dm^3*10^(-7)*1e-3;
-%     else
-%         M0 = f0*160*dm^3*10^(-7)*1e-3;
-%     end
-%     
-%     M1 = f1*Fay1(idx)*dm*1e-3; %Nm
-%     MR = M1+M0;
-%     
-%     if phi_t_dot(idx) > 0 % Senken
-% %         fprintf('senken \n');
-%         MA1 = [MA1; Fay1(idx)*(tan(phi-rho))*r2 + MR];
-%         MA2 = [MA2; Fay2(idx)*(tan(phi-rho))*r2 + Fay2(idx)*mu_l*rL];
-%     else % heben
-%         MA1 = [MA1; Fay1(idx)*(tan(phi+rho))*r2 + MR];
-%         MA2 = [MA2; Fay2(idx)*(tan(phi+rho))*r2 + Fay2(idx)*mu_l*rL];
-%     end
-% end
 
 %% Calculation of required Power and current draw
 Pow1 = gamma_dot.*MA1'; % Watt
