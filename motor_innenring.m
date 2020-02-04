@@ -53,7 +53,6 @@ mu_l = 0.01; %worst case Reibung Lager
 
 d2 = d_1-H1; %Flankendruchemesser
 r2 = d2/2; % Flankenradius
-% rL = d2/2; % Lagerdurchmesser (dw+dh)/4
 rL = (11+7)/4*(1e-3); %Roloff-Matek
 
 phi = atan(P/d2/pi);
